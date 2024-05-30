@@ -28,6 +28,7 @@ const scheduleReminder = async function (email, time, task) {
 
   try {
     await transporter.sendMail(mailOption);
+    console.log('mail send to user');
   } catch (err) {
     console.log(err);
   }
