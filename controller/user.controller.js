@@ -87,4 +87,28 @@ const getSheduledTasks = async (req, res) => {
   }
 };
 
-module.exports = { searchBook, translate, scheduleReminder, getSheduledTasks };
+const getWeather = async (req, res) => {
+  const { location } = req.query;
+  console.log(location);
+  const apiKey = process.env.WEATHER_API_KEY;
+  if (!location) {
+    return res.json({ message: "Location is required in query" });
+  } else {
+    const url = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}`;
+    try {
+      const response = await axios.get(url);
+      console.log(response.data);
+      return res.json(response.data);
+    } catch (error) {
+      console.log(error.response.data.message);
+    }
+  }
+};
+
+module.exports = {
+  searchBook,
+  translate,
+  scheduleReminder,
+  getSheduledTasks,
+  getWeather,
+};
