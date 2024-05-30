@@ -6,6 +6,7 @@ router.get('/searchBook', userController.searchBook)
 router.get('/translate', userController.translate)
 router.get('/getSchedule', userController.getSheduledTasks)
 router.get('/weather', userController.getWeather)
+router.get('/getNews', userController.getNews)
 
 router.post('/schedule', userController.scheduleReminder)
 

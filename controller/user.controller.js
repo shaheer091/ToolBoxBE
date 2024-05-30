@@ -105,10 +105,42 @@ const getWeather = async (req, res) => {
   }
 };
 
+const getNews = async (req, res) => {
+  try {
+    const { q, from, to, language = "en", sortBy = "popularity" } = req.query;
+    const apiKey = process.env.NEWS_API_KEY;
+
+    if (q) {
+      url = `https://newsapi.org/v2/everything?q=${q}&apiKey=${apiKey}`;
+    } else {
+      url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=${apiKey}`;
+    }
+    if (from) url += `&from=${from}`;
+    if (to) url += `&to=${to}`;
+    if (language) url += `&language=${language}`;
+    if (sortBy) url += `&sortBy=${sortBy}`;
+
+    console.log(url);
+    const response = await axios.get(url);
+
+    if (response.data.articles.length === 0) {
+      return res.status(404).json({ message: "No articles found" });
+    }
+
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching news data:", error.message);
+    res
+      .status(500)
+      .json({ message: "Error fetching news data", error: error.message });
+  }
+};
+
 module.exports = {
   searchBook,
   translate,
   scheduleReminder,
   getSheduledTasks,
   getWeather,
+  getNews,
 };
