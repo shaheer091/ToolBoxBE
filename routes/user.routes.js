@@ -5,4 +5,6 @@ const userController = require('../controller/user.controller')
 router.get('/searchBook', userController.searchBook)
 router.get('/translate', userController.translate)
 
+router.post('/schedule', userController.scheduleReminder)
+
 module.exports= router;

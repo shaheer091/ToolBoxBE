@@ -1,4 +1,7 @@
 const axios = require("axios");
+const cron = require("node-cron");
+const mailer = require("../utility/email.controller");
+const timeToCron = require("../utility/timeToCron");
 
 const searchBook = async (req, res) => {
   const query = req.query.q;
@@ -25,7 +28,7 @@ const searchBook = async (req, res) => {
 };
 
 const translate = async (req, res) => {
-  const { text, sourceLang, targetLang } = req.body;
+  const { text, sourceLang, targetLang } = req.query;
   try {
     const response = await axios.get(
       `https://api.mymemory.translated.net/get`,
@@ -54,4 +57,25 @@ const translate = async (req, res) => {
   }
 };
 
-module.exports = { searchBook, translate };
+const scheduleReminder = async (req, res) => {
+  const { email, task, time } = req.body;
+  console.log(task);
+  if (!email || !task || !time) {
+    return res.json({ message: "provide the necessary fields" });
+  } else {
+    const cronTime = timeToCron(time);
+    console.log(cronTime);
+    await cron.schedule(cronTime, () => {
+      if (typeof task === "string") {
+        mailer.scheduleReminder(email, time, task);
+      } else {
+        console.error("Task must be a string");
+      }
+    });
+    return res.json({
+      message: "the task has been scheduled you will be mailed at the time",
+    });
+  }
+};
+
+module.exports = { searchBook, translate, scheduleReminder };
