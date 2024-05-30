@@ -2,7 +2,7 @@ const axios = require("axios");
 const cron = require("node-cron");
 const mailer = require("../utility/email.controller");
 const timeToCron = require("../utility/timeToCron");
-const taskSchema = require('../models/task')
+const taskSchema = require("../models/task");
 
 const searchBook = async (req, res) => {
   const query = req.query.q;
@@ -29,7 +29,8 @@ const searchBook = async (req, res) => {
 };
 
 const translate = async (req, res) => {
-  const { text, sourceLang, targetLang } = req.query;
+  const { sourceLang, targetLang } = req.query;
+  const { text } = req.body;
   if (!text || !sourceLang || !targetLang) {
     return res.json({
       message: "text, sourceLang and targetLang are required",
@@ -45,8 +46,6 @@ const translate = async (req, res) => {
           },
         }
       );
-      console.log(response.data.responseData.translatedText);
-
       if (response.status === 200) {
         res.json(response.data.responseData.translatedText);
       } else {
@@ -66,17 +65,26 @@ const scheduleReminder = async (req, res) => {
   } else {
     const cronTime = timeToCron(time);
     await cron.schedule(cronTime, () => {
-        mailer.scheduleReminder(email, time, task);
+      mailer.scheduleReminder(email, time, task);
     });
     await new taskSchema({
-        email,
-        task,
-        time
-    }).save()
+      email,
+      task,
+      time,
+    }).save();
     return res.json({
       message: `the task has been scheduled you will be mailed at ${time}`,
     });
   }
 };
 
-module.exports = { searchBook, translate, scheduleReminder };
+const getSheduledTasks = async (req, res) => {
+  const tasks = await taskSchema.find();
+  if (!tasks) {
+    return res.json({ message: "No scheduled tasks" });
+  } else {
+    return res.json({ message: "Scheduled tasks found", tasks });
+  }
+};
+
+module.exports = { searchBook, translate, scheduleReminder, getSheduledTasks };
