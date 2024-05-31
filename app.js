@@ -1,15 +1,17 @@
-const express = require('express')
-const app = express()
-const userRoute = require('./routes/user.routes')
-require('dotenv').config()
-const port = process.env.PORT
+const express = require("express");
+const app = express();
+require("dotenv").config();
+const port = process.env.PORT;
 app.use(express.json());
-const database = require('./utility/database')
+const userRoute = require("./routes/user.routes");
+const commonRoute = require("./routes/common.routes");
+const database = require("./utility/database");
 
-app.use('/user', userRoute)
+app.use("/", commonRoute);
+app.use("/user", userRoute);
 
-database()
+database();
 
-app.listen(port,()=>{
-    console.log(`server running on ${port}`);
-})
+app.listen(port, () => {
+  console.log(`server running on ${port}`);
+});
