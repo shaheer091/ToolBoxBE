@@ -1,9 +1,10 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const taskSchema = mongoose.Schema({
-    email: String,
-    task: String,
-    time: String,
-})
+  userId: mongoose.Types.ObjectId,
+  email: String,
+  task: String,
+  time: String,
+});
 
-module.exports = mongoose.model('tasks', taskSchema)
+module.exports = mongoose.model("tasks", taskSchema);

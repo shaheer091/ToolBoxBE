@@ -59,8 +59,9 @@ const translate = async (req, res) => {
 };
 
 const scheduleReminder = async (req, res) => {
-  const { email, task, time } = req.body;
-  if (!email || !task || !time) {
+  const { email, id } = req.user;
+  const { task, time } = req.body;
+  if (!task || !time) {
     return res.json({ message: "provide the necessary fields" });
   } else {
     const cronTime = timeToCron(time);
@@ -68,6 +69,7 @@ const scheduleReminder = async (req, res) => {
       mailer.scheduleReminder(email, time, task);
     });
     await new taskSchema({
+      userId: id,
       email,
       task,
       time,
@@ -79,7 +81,8 @@ const scheduleReminder = async (req, res) => {
 };
 
 const getSheduledTasks = async (req, res) => {
-  const tasks = await taskSchema.find();
+  const { id } = req.user;
+  const tasks = await taskSchema.find({ userId: id });
   if (!tasks) {
     return res.json({ message: "No scheduled tasks" });
   } else {
